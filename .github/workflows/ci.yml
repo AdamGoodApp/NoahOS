@@ -1,0 +1,87 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+      - run: pnpm --filter @noahos/web typecheck
+      - run: pnpm --filter @noahos/web exec vitest run
+
+  sim:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/sim
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/sim/uv.lock
+      - run: uv sync --frozen
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - uses: actions/cache@v4
+        with:
+          path: apps/sim/.menagerie
+          key: menagerie-${{ hashFiles('apps/sim/scripts/fetch-menagerie.sh') }}
+      - run: scripts/fetch-menagerie.sh
+      - run: uv run pytest -q
+        env:
+          SIM_CAMERAS_ENABLED: "false"
+
+  proto:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+      - run: apps/web/node_modules/.bin/buf lint
+      - run: apps/web/node_modules/.bin/buf generate
+      - run: git diff --exit-code
+
+  loadgen:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/loadgen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/loadgen/go.mod
+          cache-dependency-path: tools/loadgen/go.sum
+      - run: go vet ./...
+      - run: go build ./...
+
+  # STACK.md §10 Phase 7: live smoke in Chromium and WebKit against the real sim image (no Realtime credentials,
+  # so cameras report "unavailable"), plus the outage check (Signal Lost < 2 s, recovery).
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+      - name: Start the sim
+        working-directory: apps/sim
+        run: docker compose up -d --build --wait
+      - name: Fetch models and dev vars
+        working-directory: apps/web
+        run: |
+          pnpm run models:fetch
+          cp .dev.vars.example .dev.vars
+      - run: pnpm --filter @noahos/web d1:migrate:local
+      - run: pnpm --filter @noahos/web exec playwright install --with-deps chromium webkit
+      - run: pnpm --filter @noahos/web exec playwright test
+        env:
+          E2E_SIM_CONTAINER: sim-sim-1

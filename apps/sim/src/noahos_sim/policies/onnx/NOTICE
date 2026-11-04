@@ -1,0 +1,6 @@
+go1_policy.onnx and g1_policy.onnx are the joystick locomotion policies from MuJoCo Playground,
+https://github.com/google-deepmind/mujoco_playground at commit 12ad7f3842791ced39f27e5ac96d066bbe361653,
+mujoco_playground/experimental/sim2sim/onnx/{go1_policy.onnx,g1_policy.onnx}.
+
+Copyright Google LLC. Licensed under the Apache License, Version 2.0
+(https://www.apache.org/licenses/LICENSE-2.0).

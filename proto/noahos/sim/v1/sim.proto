@@ -1,0 +1,197 @@
+syntax = "proto3";
+
+package noahos.sim.v1;
+
+// Framing: one message per binary WebSocket frame, no prefix, no compression.
+// Units: radians, metres, seconds, N·m (hinge) or N (slide), watts, °C.
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_OPERATOR = 1;
+  ROLE_VIEWER = 2;
+}
+
+enum Mode {
+  MODE_UNSPECIFIED = 0;
+  MODE_AUTO = 1;     // a policy drives the targets
+  MODE_MANUAL = 2;   // the operator's targets are held
+  MODE_STOPPED = 3;  // E-stop: targets frozen at the current pose, task clock paused
+}
+
+enum JointKind {
+  JOINT_KIND_UNSPECIFIED = 0;
+  JOINT_KIND_HINGE = 1;
+  JOINT_KIND_SLIDE = 2;
+}
+
+enum EventKind {
+  EVENT_KIND_UNSPECIFIED = 0;
+  EVENT_KIND_INFO = 1;
+  EVENT_KIND_MODE = 2;       // mode changed; Event.mode is set
+  EVENT_KIND_ROLE = 3;       // operator changed; Event.operator_id is set
+  EVENT_KIND_DENIED = 4;     // command rejected (viewer, or stopped)
+  EVENT_KIND_ERROR = 5;
+  EVENT_KIND_RECORDING = 6;  // episode recording started/stopped; message carries the file name
+}
+
+message ClientMessage {
+  oneof msg {
+    Hello hello = 1;
+    Ping ping = 2;
+    JointTargets joint_targets = 3;
+    SetMode set_mode = 4;
+    EStop estop = 5;
+    Recording recording = 6;
+  }
+}
+
+message ServerMessage {
+  // 5 is reserved for VideoFrame (camera fallback over WebSocket, see STACK.md §3.3).
+  reserved 5;
+  oneof msg {
+    Welcome welcome = 1;
+    SessionInfo session = 2;
+    Pong pong = 3;
+    Telemetry telemetry = 4;
+    Event event = 6;
+  }
+}
+
+message Hello {
+  string client_id = 1;
+  Role role = 2;
+  // Send every Nth telemetry frame to this client (1 = full rate). Applied by the relay.
+  uint32 telemetry_divisor = 3;
+  // Paired devices of one operator: a client whose token equals the lock holder's is granted ROLE_OPERATOR too.
+  string pair_token = 4;
+}
+
+message Ping {
+  string client_id = 1;
+  uint64 client_ms = 2;  // Date.now() at send
+}
+
+message Pong {
+  string client_id = 1;
+  uint64 client_ms = 2;
+  uint64 server_unix_ns = 3;  // sim wall clock when it answered
+}
+
+// Sparse targets: joint_index indexes RobotSpec.joints; target in rad or m.
+message JointTargets {
+  repeated uint32 joint_index = 1;
+  repeated float target = 2;
+}
+
+message SetMode {
+  Mode mode = 1;  // MODE_AUTO plays a policy, MODE_MANUAL holds the pose
+  string policy = 2;  // id from Welcome.policies to play with MODE_AUTO; empty = the selected policy (the first one at session start)
+}
+
+message EStop {}
+
+message Recording {
+  bool start = 1;
+  string task_label = 2;  // free text stored in the MCAP metadata
+}
+
+message Welcome {
+  string session_id = 1;
+  RobotSpec robot = 2;
+  Mode mode = 3;
+  repeated CameraSpec cameras = 4;
+  reserved 5;
+  uint32 telemetry_hz = 6;
+  repeated PolicySpec policies = 7;
+}
+
+message PolicySpec {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  float period_s = 4;  // seconds per cycle (task_cycle / task_phase)
+  bool holds_base = 5;  // true: the base is held in the air while it plays; false: the robot stands free on the floor
+}
+
+// Sent by the relay (not the sim) on every role change.
+message SessionInfo {
+  string your_client_id = 1;
+  Role granted_role = 2;
+  string operator_id = 3;  // empty when nobody holds the lock
+  uint32 clients = 4;
+}
+
+message RobotSpec {
+  string robot_id = 1;
+  repeated JointSpec joints = 2;  // hinge and slide joints in MuJoCo joint-id order
+  string base_joint = 3;          // name of the free joint, or empty for fixed-base robots
+  double timestep = 4;
+}
+
+message JointSpec {
+  string name = 1;
+  JointKind kind = 2;
+  bool limited = 3;
+  float range_min = 4;
+  float range_max = 5;
+  bool actuated = 6;
+  float effort_limit = 7;  // actuator force/torque limit, N·m or N; 0 = not given by the model
+}
+
+message CameraSpec {
+  string name = 1;
+  uint32 width = 2;
+  uint32 height = 3;
+  uint32 fps = 4;
+  string sfu_session_id = 5;  // publisher session on the Realtime SFU
+  string track_name = 6;
+}
+
+message Pose {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float qw = 4;
+  float qx = 5;
+  float qy = 6;
+  float qz = 7;
+}
+
+message SimStats {
+  float realtime_factor = 1;  // sim seconds per wall second, EWMA over 1 s
+  float physics_hz = 2;       // measured step rate
+  float step_ms = 3;          // mean mj_step wall time
+  float render_ms = 4;        // mean camera render wall time
+  float cpu_percent = 5;      // session process CPU (psutil)
+}
+
+// Arrays align with RobotSpec.joints.
+message Telemetry {
+  uint64 seq = 1;
+  double sim_time = 2;
+  uint64 sent_unix_ns = 3;
+  Mode mode = 4;
+  repeated float qpos = 5;
+  repeated float qvel = 6;
+  repeated float torque = 7;        // qfrc_actuator (servo) or qfrc_inverse (kinematic) per joint
+  repeated float power_w = 8;       // |torque * qvel|
+  repeated float motor_temp_c = 9;  // first-order thermal model, see STACK.md §5.5
+  repeated float target = 10;
+  Pose base = 11;                   // set only when base_joint != ""
+  optional float battery_percent = 12;  // absent for mains-powered robots
+  uint32 contacts = 13;
+  float total_power_w = 14;
+  SimStats stats = 15;
+  uint32 task_cycle = 16;
+  float task_phase = 17;            // 0..1 within the current cycle
+  bool recording = 18;
+  string policy = 19;               // id of the selected policy; it drives targets only in MODE_AUTO
+}
+
+message Event {
+  EventKind kind = 1;
+  string message = 2;
+  Mode mode = 3;
+  string operator_id = 4;
+  uint64 unix_ns = 5;
+}

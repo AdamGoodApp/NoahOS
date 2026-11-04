@@ -1,0 +1,30 @@
+defaults:
+  camera: { width: 320, height: 240, fps: 10 }
+  drive: servo
+  thermal: { ambient_c: 25, k_heat: 0.0005, k_cool: 0.02 }
+robots:
+  unitree_g1: { mjcf: g1.xml, battery_wh: 900, cameras: [{ name: head, body: torso_link, pos: [0.06, 0, 0.42], xyaxes: [0, -1, 0, 0, 0, 1] }] }
+  unitree_h1: { mjcf: h1.xml, battery_wh: 900 }
+  robotis_op3: { mjcf: op3.xml, battery_wh: 60 }
+  google_robot: { mjcf: robot.xml, battery_wh: 1200 }
+  hello_robot_stretch: { mjcf: stretch.xml, battery_wh: 300 }
+  unitree_a1: { mjcf: a1.xml, battery_wh: 400 }
+  unitree_go1: { mjcf: go1.xml, battery_wh: 400 }
+  unitree_go2: { mjcf: go2.xml, battery_wh: 500 }
+  anybotics_anymal_b: { mjcf: anymal_b.xml, battery_wh: 650 }
+  anybotics_anymal_c: { mjcf: anymal_c.xml, battery_wh: 900 }
+  google_barkour_v0: { mjcf: barkour_v0.xml, battery_wh: 300 }
+  google_barkour_vb: { mjcf: barkour_vb.xml, battery_wh: 300 }
+  boston_dynamics_spot: { mjcf: spot.xml, battery_wh: 600 }
+  franka_emika_panda: { mjcf: panda.xml, battery_wh: 0, cameras: [{ name: wrist, body: hand, pos: [0, 0, 0.04], xyaxes: [-1, 0, 0, 0, 1, 0] }] }
+  franka_fr3: { mjcf: fr3.xml, battery_wh: 0 }
+  universal_robots_ur5e: { mjcf: ur5e.xml, battery_wh: 0 }
+  universal_robots_ur10e: { mjcf: ur10e.xml, battery_wh: 0 }
+  kuka_iiwa_14: { mjcf: iiwa14.xml, battery_wh: 0 }
+  ufactory_xarm7: { mjcf: xarm7.xml, battery_wh: 0 }
+  rethink_robotics_sawyer: { mjcf: sawyer.xml, battery_wh: 0 }
+  ufactory_lite6: { mjcf: lite6.xml, battery_wh: 0 }
+  trossen_vx300s: { mjcf: vx300s.xml, battery_wh: 0 }
+  trossen_wx250s: { mjcf: wx250s.xml, battery_wh: 0 }
+  aloha: { mjcf: aloha.xml, battery_wh: 0 }
+  unitree_z1: { mjcf: z1.xml, battery_wh: 0, drive: kinematic }

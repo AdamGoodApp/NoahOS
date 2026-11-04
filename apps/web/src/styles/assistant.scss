@@ -1,0 +1,623 @@
+// Assistant panel: loaded on every page (the auth pages and 404 have no Carbon component CSS), so it styles plain elements with
+// Carbon tokens (white theme fallbacks) and loads IBM Plex itself.
+@use '@carbon/react/scss/config' with (
+  $use-akamai-cdn: true
+);
+@use '@carbon/react/scss/fonts';
+@use '@carbon/react/scss/theme' as *;
+@use '@carbon/react/scss/type' as *;
+@use '@carbon/react/scss/spacing' as *;
+@use '@carbon/react/scss/motion' as *;
+@use '@carbon/react/scss/breakpoint' as *;
+@use '@carbon/react/scss/components/button/tokens' as *;
+
+$font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+$font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+@mixin focus-ring {
+  outline: 2px solid $focus;
+  outline-offset: -2px;
+}
+
+.assistant-panel {
+  position: fixed;
+  z-index: 8500; // above camera picture-in-picture windows (8000), below Carbon modals (9000)
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  inset-block: var(--assistant-top, 0) 0;
+  inset-inline-end: 0;
+  inline-size: min(100vw, 26rem);
+  box-sizing: border-box;
+  border-inline-start: 1px solid $border-subtle-01;
+  background: $layer-01;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  text-align: start;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform $duration-moderate-01 motion(exit, productive),
+    visibility 0s linear $duration-moderate-01;
+
+  &[data-open='true'] {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform $duration-moderate-01 motion(entrance, productive),
+      visibility 0s;
+  }
+
+  // Under the 48px UI Shell header on /app pages.
+  &[data-shell='app'] {
+    --assistant-top: 3rem;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  button,
+  textarea {
+    font-family: inherit;
+  }
+
+  @include breakpoint-down(md) {
+    inline-size: 100vw;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &[data-open='true'] {
+      transition: none;
+    }
+  }
+}
+
+.assistant-sr-only {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.assistant-head {
+  display: flex;
+  align-items: center;
+  block-size: 3rem;
+  padding-inline-start: $spacing-05;
+  border-block-end: 1px solid $border-subtle-01;
+
+  h2 {
+    @include type-style('heading-compact-01');
+
+    flex: 1;
+    margin: 0;
+  }
+}
+
+// One-click emergency stop while the open robot is live (the panel covers the page header's Stop).
+.assistant-stop {
+  @include type-style('body-compact-01');
+
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-03;
+  block-size: 3rem;
+  padding: 0 $spacing-05;
+  border: 0;
+  background: $button-danger-primary;
+  color: $text-on-color;
+  cursor: pointer;
+
+  &:hover {
+    background: $button-danger-hover;
+  }
+
+  &:active {
+    background: $button-danger-active;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 3px $focus-inset;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+.assistant-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $icon-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $layer-hover-01;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+.assistant-body {
+  overflow-y: auto;
+  padding: $spacing-05;
+  overscroll-behavior: contain;
+}
+
+.assistant-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-05;
+
+  p {
+    @include type-style('body-01');
+
+    margin: 0;
+  }
+}
+
+.assistant-btn--primary {
+  @include type-style('body-compact-01');
+
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 3rem;
+  padding: 0 $spacing-09 0 $spacing-05;
+  background: $button-primary;
+  color: $text-on-color;
+  text-decoration: none;
+
+  &:hover {
+    background: $button-primary-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 3px $focus-inset;
+  }
+}
+
+.assistant-hello__title {
+  @include type-style('heading-03');
+
+  margin: $spacing-05 0 $spacing-03;
+}
+
+.assistant-hello__lead {
+  @include type-style('body-01');
+
+  margin: 0 0 $spacing-07;
+  color: $text-secondary;
+}
+
+.assistant-tabs {
+  display: flex;
+  margin-block-end: $spacing-05;
+  border-block-end: 2px solid $border-subtle-01;
+
+  button {
+    @include type-style('body-compact-01');
+
+    margin-block-end: -2px;
+    padding: $spacing-03 $spacing-05;
+    border: 0;
+    border-block-end: 2px solid transparent;
+    background: transparent;
+    color: $text-secondary;
+    cursor: pointer;
+
+    &:hover {
+      color: $text-primary;
+    }
+
+    &[aria-selected='true'] {
+      @include type-style('heading-compact-01');
+
+      border-block-end-color: $border-interactive;
+      color: $text-primary;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
+.assistant-examples {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assistant-example {
+  display: flex;
+  align-items: center;
+  gap: $spacing-05;
+  inline-size: 100%;
+  padding: $spacing-04 $spacing-05;
+  border: 1px solid $border-subtle-01;
+  background: $layer-02;
+  color: $text-primary;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: $layer-hover-02;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    color: $text-disabled;
+    cursor: not-allowed;
+  }
+
+  svg {
+    flex: none;
+    fill: currentColor;
+  }
+}
+
+.assistant-example__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $spacing-02;
+}
+
+.assistant-example__prompt {
+  @include type-style('body-compact-01');
+}
+
+.assistant-example__hint {
+  @include type-style('label-01');
+
+  color: $text-secondary;
+
+  .assistant-example:disabled & {
+    color: $text-disabled;
+  }
+}
+
+.assistant-messages {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-06;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assistant-msg {
+  @include type-style('body-01');
+
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-04;
+  overflow-wrap: anywhere;
+}
+
+.assistant-msg--user {
+  align-self: flex-end;
+  max-inline-size: 85%;
+  padding: $spacing-04 $spacing-05;
+  background: $layer-02;
+  white-space: pre-wrap;
+}
+
+.assistant-text,
+.assistant-pending {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.assistant-pending {
+  color: $text-secondary;
+}
+
+.assistant-chevron {
+  flex: none;
+  fill: currentColor;
+  transition: transform $duration-fast-02 motion(standard, productive);
+
+  details[open] > summary > & {
+    transform: rotate(90deg);
+  }
+}
+
+.assistant-thinking {
+  @include type-style('label-01');
+
+  color: $text-secondary;
+
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-02;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      color: $text-primary;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
+.assistant-thinking__body {
+  @include type-style('label-02');
+
+  margin: $spacing-03 0 0;
+  padding-inline-start: $spacing-04;
+  border-inline-start: 2px solid $border-subtle-01;
+  white-space: pre-wrap;
+}
+
+.assistant-steps {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-02;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assistant-step {
+  @include type-style('label-02');
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: $spacing-03;
+    min-block-size: 2rem;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      color: $text-primary;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  .assistant-chevron {
+    color: $icon-secondary;
+  }
+
+  &[data-state='done'] .assistant-step__glyph {
+    color: $support-success;
+  }
+
+  &[data-state='error'] .assistant-step__glyph {
+    color: $support-error;
+  }
+}
+
+.assistant-step__glyph {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1rem;
+  block-size: 1rem;
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+.assistant-step__label {
+  flex: 1;
+}
+
+.assistant-spinner {
+  display: block;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  border: 2px solid $border-interactive;
+  border-block-start-color: transparent;
+  border-radius: 50%;
+  animation: assistant-spin 1s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 3s;
+  }
+}
+
+@keyframes assistant-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.assistant-step__detail {
+  padding: $spacing-02 0 $spacing-03 calc(1rem + #{$spacing-03});
+
+  p {
+    @include type-style('label-01');
+
+    margin: $spacing-03 0 $spacing-02;
+    color: $text-secondary;
+  }
+
+  pre {
+    @include type-style('code-01');
+
+    overflow: auto;
+    max-block-size: 12rem;
+    margin: 0;
+    padding: $spacing-03;
+    background: $layer-02;
+    font-family: $font-mono;
+    white-space: pre-wrap;
+  }
+}
+
+.assistant-foot {
+  padding: $spacing-04 $spacing-05 $spacing-05;
+  border-block-start: 1px solid $border-subtle-01;
+}
+
+.assistant-notice {
+  @include type-style('body-compact-01');
+
+  margin: 0 0 $spacing-04;
+  padding: $spacing-04 $spacing-05;
+  border-inline-start: 3px solid $support-info;
+  background: $layer-02;
+}
+
+.assistant-notice--error {
+  border-inline-start-color: $support-error;
+}
+
+.assistant-composer {
+  display: flex;
+  align-items: flex-end;
+
+  textarea {
+    @include type-style('body-01');
+
+    flex: 1;
+    min-block-size: 2.5rem;
+    max-block-size: calc(4 * 1.25rem + 2 * #{$spacing-03} + 2px);
+    padding: $spacing-03 $spacing-05;
+    border: 0;
+    border-block-end: 1px solid $border-strong-01;
+    border-radius: 0;
+    background: $field-01;
+    color: $text-primary;
+    resize: none;
+
+    &::placeholder {
+      color: $text-placeholder;
+    }
+
+    &:focus {
+      @include focus-ring;
+    }
+
+    &:disabled {
+      border-block-end-color: transparent;
+      color: $text-disabled;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.assistant-send {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: $button-primary;
+  color: $icon-on-color;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: $button-primary-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 3px $focus-inset;
+  }
+
+  &:disabled {
+    background: $button-disabled;
+    color: $icon-on-color-disabled;
+    cursor: not-allowed;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+.assistant-helper {
+  @include type-style('helper-text-01');
+
+  margin: $spacing-03 0 0;
+  color: $text-helper;
+}
+
+.assistant-launcher {
+  @include type-style('body-compact-01');
+
+  position: fixed;
+  z-index: 8400;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-03;
+  inset-block-end: $spacing-06;
+  inset-inline-end: $spacing-06;
+  min-block-size: 3rem;
+  padding: 0 $spacing-05;
+  border: 0;
+  background: $button-primary;
+  color: $text-on-color;
+  font-family: $font-sans;
+  cursor: pointer;
+
+  &:hover {
+    background: $button-primary-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 3px $focus-inset;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}

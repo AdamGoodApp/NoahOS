@@ -1,0 +1,48 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "noahos",
+  "account_id": "c4fe6001a343c827bab996be52394a10",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "workers_dev": false,
+  "routes": [{ "pattern": "noahos.adamgoodapp.com", "custom_domain": true }],
+  "vars": {
+    "APP_ENV": "production",
+    "APP_ORIGIN": "https://noahos.adamgoodapp.com",
+    "SIM_TELEMETRY_HZ": "60",
+    "CF_REALTIME_APP_ID": "24cbcf689ac04e3a471560f78559544d"
+  },
+  // Assistant: Claude through AI Gateway `main`, which holds the Anthropic key (BYOK); the binding needs no token.
+  "ai": { "binding": "AI" },
+  // Per-user caps on /api/chat (anyone can sign up, and the model runs on the account's key): 20 new messages a
+  // minute, and 120 requests a minute in all (each browser tool result continues the run with another request).
+  "ratelimits": [
+    { "name": "CHAT_LIMIT", "namespace_id": "4101", "simple": { "limit": 20, "period": 60 } },
+    { "name": "CHAT_STEP_LIMIT", "namespace_id": "4102", "simple": { "limit": 120, "period": 60 } }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "noahos-auth",
+      "database_id": "79561ec9-8dab-4c43-bbf6-b87241986ef3",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "send_email": [{ "name": "EMAIL" }],
+  "durable_objects": {
+    "bindings": [{ "name": "ROBOT_SESSION", "class_name": "RobotSession" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RobotSession"] }],
+  "containers": [
+    {
+      "class_name": "RobotSession",
+      "image": "../sim/Dockerfile",
+      "image_build_context": "../sim",
+      "instance_type": "standard-3",
+      "max_instances": 10
+    }
+  ],
+  "dev": { "enable_containers": false }
+}

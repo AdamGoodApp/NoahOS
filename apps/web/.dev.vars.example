@@ -1,0 +1,26 @@
+# Copy to .dev.vars (gitignored): `cp .dev.vars.example .dev.vars`. Read by `vite dev` / `wrangler dev`.
+# Empty values mean "unset". `pnpm cf-typegen` derives the secret names in `Env` from this file.
+APP_ENV=development
+
+# Local sim orchestrator (docker compose or `uv run noahos-sim serve`).
+# When set, RobotSession talks to this origin instead of a Cloudflare Container.
+SIM_UPSTREAM=http://localhost:8000
+
+# Must match SIM_SHARED_SECRET of the sim when that is set.
+SIM_SHARED_SECRET=
+
+# Cloudflare Realtime SFU (cameras). CF_REALTIME_APP_ID is also a var in wrangler.jsonc.
+CF_REALTIME_APP_ID=
+CF_REALTIME_APP_SECRET=
+
+# Container env, production only: JSON array of {urls, username?, credential?} for the sim's aiortc.
+SIM_ICE_SERVERS=
+
+# better-auth. APP_ORIGIN empty = infer from the request (vite dev on any port); production sets it in wrangler.jsonc.
+APP_ORIGIN=
+# Dev-only placeholder; production uses `wrangler secret put BETTER_AUTH_SECRET`.
+BETTER_AUTH_SECRET=dev-only-secret-change-me-0123456789abcdef
+
+# Cloudflare Realtime TURN key (production only): the relay generates short-lived TURN credentials for the sim container.
+TURN_KEY_ID=
+TURN_KEY_API_TOKEN=

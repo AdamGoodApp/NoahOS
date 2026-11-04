@@ -1,0 +1,14 @@
+{
+  "name": "noahos",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @noahos/web dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "deploy": "pnpm --filter @noahos/web run deploy"
+  },
+  "dependencies": {
+    "@carbon/react": "^1.119.0"
+  }
+}

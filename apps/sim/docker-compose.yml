@@ -1,0 +1,14 @@
+services:
+  sim:
+    build: .
+    ports: ["8000:8000", "9000-9032:9000-9032"]   # orchestrator; Foxglove ports of sessions
+    env_file:
+      - path: .env
+        required: false
+    volumes: ["./data:/data"]
+    init: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12

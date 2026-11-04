@@ -1,0 +1,1395 @@
+@use '@carbon/react' with (
+  $use-akamai-cdn: true
+);
+@use '@carbon/react/scss/spacing' as *;
+@use '@carbon/react/scss/theme' as *;
+@use '@carbon/react/scss/type' as *;
+@use '@carbon/react/scss/breakpoint' as *;
+
+// Fixed shell under the 48px UI Shell header; only the robot list scrolls.
+.fleet-shell {
+  position: fixed;
+  display: flex;
+  inset: 3rem 0 0;
+  overflow: hidden;
+  background: $background;
+}
+
+.fleet-filters {
+  display: none;
+  flex: 0 0 18rem;
+  flex-direction: column;
+  overflow-y: auto;
+  border-inline-end: 1px solid $border-subtle-01;
+  background: $layer-01;
+
+  @include breakpoint(lg) {
+    display: flex;
+  }
+}
+
+.fleet-filters__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-05;
+}
+
+.fleet-filters__title {
+  @include type-style('heading-compact-01');
+}
+
+.fleet-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-02;
+}
+
+.fleet-battery {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+}
+
+.fleet-main {
+  display: flex;
+  min-inline-size: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.fleet-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: $spacing-03;
+  padding: $spacing-05;
+  border-block-end: 1px solid $border-subtle-01;
+}
+
+.fleet-toolbar__search {
+  flex: 1 1 16rem;
+}
+
+.fleet-toolbar__sort {
+  inline-size: 11rem;
+}
+
+.fleet-toolbar__filters-toggle {
+  @include breakpoint(lg) {
+    display: none;
+  }
+}
+
+.fleet-list {
+  min-block-size: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: $spacing-05;
+}
+
+.fleet-mobile-filters {
+  margin-block-end: $spacing-05;
+  margin-inline: $spacing-05;
+  background: $layer-01;
+
+  @include breakpoint(lg) {
+    display: none;
+  }
+}
+
+.robot-tile {
+  display: flex;
+  block-size: 100%;
+  flex-direction: column;
+  gap: $spacing-04;
+}
+
+.robot-tile__media {
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: $layer-accent-01;
+}
+
+.robot-tile__line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-03;
+}
+
+.robot-tile__name {
+  @include type-style('heading-compact-01');
+}
+
+.robot-tile__meta {
+  overflow: hidden;
+  margin-block-start: $spacing-01;
+  color: $text-secondary;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  @include type-style('helper-text-01');
+}
+
+.robot-tile__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-03;
+  margin-block-start: auto;
+  @include type-style('helper-text-01');
+}
+
+.robot-reading {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: $spacing-02;
+  @include type-style('body-compact-01');
+}
+
+.robot-reading--stale,
+.robot-age {
+  color: $text-secondary;
+}
+
+.robot-age {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-02;
+}
+
+.robot-age--stale {
+  color: $text-primary;
+}
+
+.fleet-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-05;
+  padding: $spacing-10 $spacing-05;
+  text-align: center;
+  @include type-style('body-01');
+}
+
+.fleet-sr-only {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fleet-brand {
+  display: inline-flex;
+  align-items: center;
+}
+
+.robot-tile__text {
+  min-inline-size: 0;
+}
+
+// Control page (/app/robots/$id). Desktop: fixed shell, panels scroll on their own; below lg the page scrolls.
+.control-missing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-05;
+  padding: calc(3rem + #{$spacing-05}) $spacing-05 $spacing-05;
+}
+
+.control-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 3rem);
+  margin-top: 3rem;
+  background: $background;
+
+  @include breakpoint(lg) {
+    position: fixed;
+    inset: 3rem 0 0;
+    min-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+  }
+}
+
+.control-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-03 $spacing-05;
+  padding: $spacing-02 $spacing-05;
+  border-block-end: 1px solid $border-subtle-01;
+  background: $layer-01;
+
+  @include breakpoint(xlg) {
+    flex-wrap: nowrap;
+    min-height: 3rem;
+    padding-block: 0;
+  }
+}
+
+.control-head__title-group,
+.control-head__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: $spacing-03;
+}
+
+.control-head__title-group {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.control-head__title {
+  @include type-style('heading-03');
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.control-head__status {
+  display: flex;
+  align-items: center;
+  gap: $spacing-04;
+  white-space: nowrap;
+}
+
+// Below xlg the view tabs take their own row under the title and actions.
+.control-head__tabs {
+  flex: 1 1 100%;
+  min-width: 0;
+  order: 3;
+
+  @include breakpoint(xlg) {
+    flex-basis: 0;
+    min-width: 22rem;
+    order: 0;
+  }
+}
+
+.control-head__actions {
+  margin-inline-start: auto;
+}
+
+.control-tab-panel {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+
+  &:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.control-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  @include breakpoint(lg) {
+    flex-direction: row;
+  }
+}
+
+.control-panel {
+  background: $layer-01;
+
+  @include breakpoint(lg) {
+    flex: 0 0 18rem;
+    overflow-y: auto;
+  }
+}
+
+.control-panel--left {
+  order: 2;
+  padding: $spacing-05 0;
+  border-block-start: 1px solid $border-subtle-01;
+
+  @include breakpoint(lg) {
+    order: 0;
+    border-block-start: 0;
+    border-inline-end: 1px solid $border-subtle-01;
+  }
+}
+
+.control-panel--right {
+  order: 3;
+  border-block-start: 1px solid $border-subtle-01;
+
+  @include breakpoint(lg) {
+    border-block-start: 0;
+    border-inline-start: 1px solid $border-subtle-01;
+  }
+}
+
+.control-empty {
+  @include type-style('body-01');
+
+  padding: $spacing-05;
+  color: $text-secondary;
+}
+
+.control-center {
+  position: relative; // anchors the live dock that floats over the stage
+  display: flex;
+  flex-direction: column;
+  order: 1;
+  min-width: 0;
+
+  @include breakpoint(lg) {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.control-stage {
+  position: relative;
+  height: 60vh;
+  min-height: 20rem;
+  overflow: hidden;
+  background: $layer-01;
+
+  &:focus {
+    outline: 2px solid $focus;
+    outline-offset: -2px;
+  }
+
+  @include breakpoint(lg) {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+.control-stage__canvas,
+.control-stage__skeleton {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.control-stage__info {
+  position: absolute;
+  inset-block-start: $spacing-05;
+  inset-inline-start: $spacing-05;
+  pointer-events: none;
+}
+
+.control-stage__hint {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.control-readout {
+  @include type-style('code-01');
+
+  display: flex;
+  gap: $spacing-04;
+  margin-block-start: $spacing-02;
+  color: $text-primary;
+  font-variant-numeric: tabular-nums;
+
+  div {
+    display: flex;
+    gap: $spacing-02;
+  }
+
+  dt {
+    color: $text-secondary;
+  }
+}
+
+.control-stage__view {
+  position: absolute;
+  inset-block-start: calc(72px + #{$spacing-06});
+  inset-inline-end: $spacing-03;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-02;
+  width: 10rem;
+}
+
+.control-stage__zoom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.control-stage__status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-03;
+  pointer-events: none;
+
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.control-stage__status--error {
+  padding: $spacing-05;
+  pointer-events: auto;
+}
+
+.control-toolbar {
+  position: absolute;
+  inset-block-end: $spacing-05;
+  inset-inline-start: 50%;
+  display: flex;
+  align-items: center;
+  border: 1px solid $border-subtle-01;
+  background: $layer-01;
+  transform: translateX(-50%);
+}
+
+.control-toolbar__divider {
+  align-self: stretch;
+  width: 1px;
+  margin-block: $spacing-03;
+  background: $border-subtle-01;
+}
+
+.control-budget {
+  padding: $spacing-04 $spacing-05;
+  border-block-start: 1px solid $border-subtle-01;
+  background: $layer-01;
+}
+
+.control-stats {
+  display: flex;
+  gap: $spacing-03;
+  padding: $spacing-05;
+}
+
+.control-stat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $spacing-02;
+  min-width: 0;
+  min-height: 0;
+}
+
+.control-stat__value {
+  @include type-style('heading-03');
+}
+
+.control-stat__caption {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.control-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-03;
+}
+
+.control-update__title {
+  @include type-style('body-compact-01');
+
+  display: block;
+}
+
+.control-update__description {
+  @include type-style('helper-text-01');
+
+  display: block;
+  color: $text-secondary;
+}
+
+.control-policy__title {
+  @include type-style('body-compact-01');
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-03;
+}
+
+.control-policy__description {
+  @include type-style('helper-text-01');
+
+  display: block;
+  color: $text-secondary;
+}
+
+// Control joint tool: wheel over the 3D view (centred on the joint), XY pad and stats in the right panel.
+.joint-wheel {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 16rem;
+  height: 16rem;
+  pointer-events: none;
+  visibility: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  svg {
+    display: block;
+    overflow: visible;
+  }
+}
+
+// While the joint sits on a limit, the wheel's live parts turn red like the part in the 3D view.
+.joint-wheel--limit {
+  .joint-wheel__spoke,
+  .joint-wheel__limit {
+    stroke: $support-error;
+  }
+
+  .joint-wheel__hub,
+  .joint-wheel__handle {
+    fill: $support-error;
+  }
+}
+
+.joint-wheel__axis {
+  stroke: $border-strong-01;
+  stroke-width: 1;
+}
+
+.joint-wheel__track {
+  fill: none;
+  stroke: $icon-primary;
+  stroke-width: 2;
+}
+
+.joint-wheel__track--out {
+  stroke-dasharray: 10 8;
+}
+
+.joint-wheel__limit {
+  stroke: $interactive;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.joint-wheel__label {
+  @include type-style('body-compact-01');
+
+  fill: $text-primary;
+}
+
+.joint-wheel__spoke {
+  stroke: $interactive;
+  stroke-width: 2;
+}
+
+.joint-wheel__hub {
+  fill: $interactive;
+  opacity: 0.35;
+}
+
+.joint-wheel__pivot {
+  fill: $icon-primary;
+}
+
+.joint-wheel__hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 32;
+  cursor: grab;
+  pointer-events: stroke;
+}
+
+.joint-wheel__handle {
+  fill: $interactive;
+  stroke: $icon-on-color;
+  stroke-width: 3;
+  cursor: grab;
+  pointer-events: all;
+}
+
+.joint-panel {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+  padding: $spacing-05;
+}
+
+.joint-panel__eyebrow {
+  @include type-style('heading-compact-01');
+}
+
+.joint-panel__empty-text,
+.joint-panel__note {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.joint-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-03;
+}
+
+.joint-panel__title {
+  @include type-style('heading-03');
+}
+
+.joint-panel__subtitle {
+  @include type-style('body-compact-01');
+
+  color: $text-secondary;
+}
+
+.joint-panel__value {
+  @include type-style('heading-05');
+
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-03;
+  font-variant-numeric: tabular-nums;
+}
+
+.joint-panel__range {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.joint-panel__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-04 $spacing-03;
+  padding: $spacing-04;
+  background: $layer-02;
+}
+
+.joint-stat {
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+  min-width: 0;
+
+  &:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.joint-stat__ring {
+  position: relative;
+  display: grid;
+  flex: 0 0 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  color: $icon-secondary;
+
+  .joint-stat__gauge {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.joint-stat__track,
+.joint-stat__fill {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.joint-stat__track {
+  stroke: $border-subtle-01;
+}
+
+.joint-stat__fill {
+  stroke: $interactive;
+  stroke-linecap: round;
+}
+
+.joint-stat__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.joint-stat__caption {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.joint-stat__value {
+  @include type-style('body-compact-01');
+
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.joint-pad {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  background: $background-brand;
+  cursor: crosshair;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: 2px;
+  }
+}
+
+.joint-pad__dot {
+  fill: $icon-on-color;
+}
+
+.joint-pad__label {
+  fill: $text-on-color;
+  font-size: 4.5px;
+}
+
+.joint-pad__origin {
+  fill: none;
+  stroke: $icon-on-color;
+  stroke-width: 0.5;
+}
+
+.joint-pad__handle {
+  fill: $icon-on-color;
+}
+
+.joint-panel__pad-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-03;
+  margin-block-end: -$spacing-03;
+}
+
+.joint-panel__pad-title {
+  @include type-style('heading-compact-01');
+}
+
+// ---- Live mode (STACK.md §7) -----------------------------------------------------------------
+
+.live-controls__loading {
+  width: auto;
+  white-space: nowrap;
+}
+
+.live-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-02;
+  margin-block-start: $spacing-02;
+}
+
+// Simulation tab: camera dock on top, then tiles · console · control mode, task, joint table.
+// position: relative keeps Carbon's visually-hidden (absolute) elements inside this scroller, not the fixed shell.
+.sim-tab {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $spacing-05;
+  min-height: 0;
+  padding: $spacing-05;
+  overflow-y: auto;
+}
+
+.sim-tab--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.sim-tab__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-04;
+  max-width: 32rem;
+}
+
+.sim-tab__empty-title {
+  @include type-style('heading-03');
+}
+
+.sim-tab__empty-text,
+.sim-tab__note {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.sim-tab__row {
+  display: grid;
+  gap: $spacing-05;
+  grid-template-columns: 1fr;
+
+  @include breakpoint(lg) {
+    grid-template-columns: 6fr 6fr 4fr;
+  }
+}
+
+.sim-tab__tiles {
+  display: grid;
+  gap: $spacing-03;
+  grid-template-columns: 1fr 1fr;
+}
+
+.sim-tab__console {
+  background: $layer-01;
+}
+
+.sim-tab__console-line {
+  @include type-style('code-01');
+}
+
+.sim-tab__console-time {
+  color: $text-secondary;
+}
+
+.sim-tab__console-error {
+  color: $text-error;
+}
+
+.sim-tab__mode {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-04;
+  padding: $spacing-05;
+  background: $layer-01;
+}
+
+.sim-tab__section-title {
+  @include type-style('heading-compact-01');
+}
+
+.sim-tab__mode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-03;
+}
+
+.sim-tab__episodes {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.sim-tab__record {
+  display: flex;
+  align-items: flex-end;
+  gap: $spacing-03;
+}
+
+.sim-tab__episode-name {
+  @include type-style('body-compact-01');
+
+  display: block;
+}
+
+.sim-tab__episode-meta {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.sim-tab__task {
+  padding: $spacing-04 $spacing-05;
+  background: $layer-01;
+}
+
+.camera-dock {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.camera-dock__main {
+  position: relative;
+  width: 100%;
+  max-height: 60vh;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: $layer-02;
+}
+
+.camera-dock__video,
+.camera-dock__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: $background-inverse;
+}
+
+.camera-dock__status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-03;
+  padding: $spacing-05;
+  color: $text-on-color;
+
+  @include type-style('helper-text-01');
+}
+
+.camera-dock__overlay {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+}
+
+.camera-dock__overlay--tl {
+  inset-block-start: $spacing-04;
+  inset-inline-start: $spacing-04;
+  width: min(20rem, 60%);
+}
+
+.camera-dock__overlay--tr {
+  inset-block-start: $spacing-04;
+  inset-inline-end: $spacing-04;
+}
+
+.camera-dock__overlay--bl {
+  inset-block-end: $spacing-04;
+  inset-inline-start: $spacing-04;
+}
+
+.camera-dock__overlay--br {
+  inset-block-end: $spacing-04;
+  inset-inline-end: $spacing-04;
+}
+
+.camera-dock__thumbs {
+  display: flex;
+  gap: $spacing-03;
+  height: 6rem;
+}
+
+.camera-dock__thumb {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 1px solid $border-subtle-01;
+  background: $background-inverse;
+  cursor: pointer;
+
+  &:focus {
+    outline: 2px solid $focus;
+    outline-offset: -2px;
+  }
+}
+
+.camera-dock__thumb-label {
+  @include type-style('helper-text-01');
+
+  position: absolute;
+  inset-block-end: $spacing-02;
+  inset-inline-start: $spacing-02;
+  padding: 0 $spacing-02;
+  background: $background-inverse;
+  color: $text-inverse;
+}
+
+.logs-tab {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: $spacing-05;
+  overflow-y: auto;
+}
+
+// Control page, live only: stat tiles and analysis cards under the 3D view (layout after the designer's reference).
+// Below lg the page scrolls and the dock sits under the stage. From lg (fixed, full-height layout) tiles and cards are
+// four across in two short rows and float over the bottom of the 3D view, which keeps its full height. Only the tiles
+// and cards take pointer events, so the model stays draggable between them.
+.live-dock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+  padding: $spacing-03;
+
+  @include breakpoint(lg) {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    padding: $spacing-05;
+    pointer-events: none;
+
+    .control-stat,
+    .live-card,
+    .live-dock__toggle {
+      border: 1px solid $border-subtle-01; // the stage shares the tiles' layer colour
+      pointer-events: auto;
+    }
+  }
+}
+
+// Hide/show for the analysis cards: a tab on the dock's top-right edge, above the tiles.
+.live-dock__toggle {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: $spacing-05;
+  background: $layer-01;
+  transform: translateY(-100%);
+}
+
+.live-dock__tiles,
+.live-analysis {
+  display: grid;
+  gap: $spacing-03;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include breakpoint(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.live-dock__tiles .control-stat {
+  padding: $spacing-04;
+}
+
+// Live tiles and cards keep one line per text so changing values never change the dock's height.
+.live-dock__tiles,
+.sim-tab__tiles {
+  .control-stat__value,
+  .control-stat__caption {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.live-card {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+  min-width: 0;
+  padding: $spacing-04;
+}
+
+.live-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-03;
+}
+
+.live-card__titles {
+  min-width: 0;
+}
+
+.live-card__title,
+.live-card__subtitle,
+.live-card__note {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-card__title {
+  @include type-style('heading-compact-01');
+}
+
+.live-card__subtitle,
+.live-card__note {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.live-card__value {
+  @include type-style('heading-03');
+
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-chart {
+  display: block;
+  width: 100%;
+  height: 4rem;
+}
+
+.live-chart__bar {
+  fill: $interactive;
+}
+
+.live-chart__bar--alert {
+  fill: $support-error;
+}
+
+.live-chart__line {
+  stroke: $text-secondary;
+  stroke-dasharray: 4 3;
+  stroke-width: 1;
+}
+
+.live-chart__line--alert {
+  stroke: $support-error;
+}
+
+.live-chart__trace {
+  fill: none;
+  stroke: $text-primary;
+  stroke-width: 1.5;
+}
+
+.live-line {
+  position: relative;
+  margin-inline-end: $spacing-02; // room for the latest-value dot on the right edge
+}
+
+.live-line__label {
+  @include type-style('helper-text-01');
+
+  position: absolute;
+  inset-inline-end: $spacing-05; // clear of the latest-value dot on the right edge
+  margin-block-end: $spacing-01;
+  color: $text-secondary;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.live-line__dot {
+  position: absolute;
+  width: $spacing-03;
+  height: $spacing-03;
+  border-radius: 50%;
+  background: $interactive;
+  box-shadow: 0 0 0 3px $layer-01;
+  transform: translate(-50%, -50%);
+}
+
+.live-line__dot--alert {
+  background: $support-error;
+}
+
+// Between lg and xlg the centre column is narrow (≈ 480–720 px for four cards): stack the headline under the title and
+// drop the subtitle (it stays available as the card's hover title text) so titles stay readable.
+@include breakpoint-between(lg, xlg) {
+  .live-card__head {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .live-card__subtitle {
+    display: none;
+  }
+
+  .live-card .live-chart {
+    height: 3rem;
+  }
+}
+
+// ---- Cameras in the Control page's right panel (live only) and their picture-in-picture windows ----
+
+.camera-rail {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-04;
+  padding: $spacing-05;
+}
+
+.camera-rail__title {
+  @include type-style('heading-compact-01');
+}
+
+.camera-rail__empty {
+  @include type-style('helper-text-01');
+
+  color: $text-secondary;
+}
+
+.camera-card {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-02;
+}
+
+.camera-card__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: $background-inverse;
+}
+
+.camera-card__video,
+.camera-pip__video,
+.camera-modal__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: $background-inverse;
+}
+
+.camera-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: $spacing-04;
+  color: $text-on-color;
+  text-align: center;
+
+  @include type-style('helper-text-01');
+}
+
+.camera-card__actions {
+  position: absolute;
+  inset-block-start: $spacing-02;
+  inset-inline-end: $spacing-02;
+  display: flex;
+  gap: $spacing-01;
+  background: $layer-01;
+}
+
+.camera-card__name {
+  @include type-style('body-compact-01');
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.camera-modal__video {
+  max-height: 70vh;
+}
+
+.camera-pip {
+  position: fixed;
+  z-index: 8000; // above the page, below Carbon modals (9000)
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid $border-strong-01;
+  background: $layer-01;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.camera-pip__head {
+  display: flex;
+  flex: 0 0 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline-start: $spacing-04;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.camera-pip__title {
+  @include type-style('heading-compact-01');
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.camera-pip__video {
+  flex: 1;
+  min-height: 0;
+}
+
+// Bottom-right resize corner: drawn as two diagonal strokes.
+.camera-pip__resize {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  width: $spacing-05;
+  height: $spacing-05;
+  background: linear-gradient(135deg, transparent 50%, $icon-on-color 50%, $icon-on-color 60%, transparent 60%, transparent 75%, $icon-on-color 75%, $icon-on-color 85%, transparent 85%);
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+// Auth pages (/auth/*): one centred 25rem column on the page background.
+.auth-shell {
+  min-block-size: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: $spacing-07 $spacing-05;
+  background: $background;
+}
+
+.auth-card {
+  inline-size: 100%;
+  max-inline-size: 25rem;
+  display: grid;
+  gap: $spacing-06;
+}
+
+.auth-brand {
+  @include type-style('heading-03');
+  color: $text-primary;
+  text-decoration: none;
+}
+
+.auth-title {
+  @include type-style('heading-04');
+}
+
+.auth-lead,
+.auth-footer {
+  @include type-style('body-01');
+  color: $text-secondary;
+}
+
+.auth-form .cds--btn {
+  inline-size: 100%;
+  max-inline-size: none;
+}
+
+.auth-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-start: $spacing-03;
+}
+
+// Account panel opened from the header avatar.
+.auth-account {
+  display: grid;
+  gap: $spacing-02;
+  padding: $spacing-05;
+  color: $text-primary;
+  @include type-style('body-01');
+}
+
+.auth-account span {
+  color: $text-secondary;
+  overflow-wrap: anywhere;
+}

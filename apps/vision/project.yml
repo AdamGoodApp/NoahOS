@@ -1,0 +1,31 @@
+name: NoahOS
+options:
+  bundleIdPrefix: com.noahos
+  deploymentTarget: { visionOS: "2.0" }
+  xcodeVersion: "27.0"
+  projectFormat: xcode16_0
+packages:
+  SwiftProtobuf: { url: https://github.com/apple/swift-protobuf, from: 1.39.0 }
+targets:
+  NoahOS:
+    type: application
+    platform: visionOS
+    sources: [Sources]
+    dependencies: [{ package: SwiftProtobuf }]
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: NoahOS
+        UIApplicationSceneManifest: { UIApplicationSupportsMultipleScenes: true }
+        NSAppTransportSecurity: { NSAllowsLocalNetworking: true }
+        NSLocalNetworkUsageDescription: Connects to the NoahOS simulation server on your network.
+    settings:
+      base: { SWIFT_VERSION: "5.0", CODE_SIGN_STYLE: Automatic, PRODUCT_BUNDLE_IDENTIFIER: com.noahos.vision }
+    scheme: { testTargets: [NoahOSTests] }
+  NoahOSTests:
+    type: bundle.unit-test
+    platform: visionOS
+    sources: [Tests]
+    dependencies: [{ target: NoahOS }]
+    settings:
+      base: { GENERATE_INFOPLIST_FILE: YES }

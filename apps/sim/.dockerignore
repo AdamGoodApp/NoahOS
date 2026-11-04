@@ -1,0 +1,6 @@
+.venv
+.menagerie
+data
+.env
+**/__pycache__
+tests
