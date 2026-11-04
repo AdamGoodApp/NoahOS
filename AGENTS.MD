@@ -1,6 +1,6 @@
 ## Design context — read before any design, UX or UI work
 
-Product: the name of this project's root folder (replace with a name to override). "This product" in any request means this product; use this name wherever a name is needed (e.g. the Mobbin collection).
+Product: NoahOS. "This product" in any request means this product; use this name wherever a name is needed (e.g. the Mobbin collection).
 
 Read these once per session, before the first design, UX or UI task, and build on them. After that, re-read only files that changed, plus the files each command names. Do not contradict a settled decision without asking the designer first.
 
